@@ -3,6 +3,8 @@ package server;
 import client.Client;
 import user.User;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +13,17 @@ import java.util.List;
  * Created by eric on 4/18/17.
  */
 public class Server {
-
     private static final int PORT = 8090;
-
-
     private Socket serverSocket;
-    List<User> users=new ArrayList<User>();
+    List<Client> clients=new ArrayList<Client>();
+    Client client;
+
 
     public Boolean isLogin(String username , String password , int serverPort , String serverIp)
     {
-        Client client = new Client(serverIp , serverPort);
-     for(User user : users)
-     {
-         if(user.getUsername().equals(username) && user.getPassword().equals(password)
+        for(Client clientUser : clients)
+        {
+         if(clientUser.getUser().getUsername().equals(username) && clientUser.getUser().getUsername().equals(password)
                  && client.getServerPort()==serverPort && client.getServerIp().equals(serverIp))
          {
             return true;
@@ -32,19 +32,32 @@ public class Server {
         return false;
     }
 
-    public List<User> getUsers()
+    public List<Client> getUsers()
     {
-        return this.users;
+        return this.clients;
     }
 
     public void onlineUsers()
     {
+        for(Client client : clients)
+        {
+            if(client.getSocket().isConnected())
+            {
+                this.clients.add(client);
+            }
+        }
 
     }
 
-    private void disconnect()
+    private void offlineUsers()
     {
-
+        for(Client client : this.clients)
+        {
+            if(client.getSocket().isClosed())
+            {
+                this.clients.remove(client);
+            }
+        }
     }
     private void close()
     {
