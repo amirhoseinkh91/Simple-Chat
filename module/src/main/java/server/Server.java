@@ -37,28 +37,7 @@ public class Server {
         return this.clients;
     }
 
-    public void onlineUsers()
-    {
-        for(Client client : clients)
-        {
-            if(client.getSocket().isConnected())
-            {
-                this.clients.add(client);
-            }
-        }
 
-    }
-
-    private void offlineUsers()
-    {
-        for(Client client : this.clients)
-        {
-            if(client.getSocket().isClosed())
-            {
-                this.clients.remove(client);
-            }
-        }
-    }
     private void close()
     {
 
