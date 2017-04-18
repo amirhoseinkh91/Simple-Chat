@@ -1,8 +1,14 @@
 package client.gui;
 
+import client.Client;
+import user.User;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.Socket;
 
 /**
  * Created by amir on 4/18/17.
@@ -26,6 +32,9 @@ public class LoginPanel extends JPanel {
         // define buttons
         defineButtons();
 
+        // actionForConnectButton
+        btnConnectClicked();
+
         // define lables
         defineLabels();
 
@@ -42,20 +51,37 @@ public class LoginPanel extends JPanel {
         addTexfFields();
     }
 
+    private void btnConnectClicked(){
+        btnConnect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                btnConnectAction();
+            }
+        });
+    }
+
+    private void btnConnectAction(){
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
+        String serverIp = txtServerIp.getText();
+        int serverPort =  Integer.parseInt(txtServerPort.getText());
+        User user = new User(username, password);
+        Client client = new Client(serverIp, serverPort , user);
+    }
+
     private void addTexfFields(){
-        txtServerPort.setBounds(150, 20, 100, 20);
+        txtServerPort.setBounds(150, 20, 120, 20);
         add(txtServerPort);
         txtServerPort.setVisible(true);
 
-        txtServerIp.setBounds(150, 50, 100, 20);
+        txtServerIp.setBounds(150, 50, 120, 20);
         add(txtServerIp);
         txtServerIp.setVisible(true);
 
-        txtUsername.setBounds(150, 80, 100, 20);
+        txtUsername.setBounds(150, 80, 120, 20);
         add(txtUsername);
         txtUsername.setVisible(true);
 
-        txtPassword.setBounds(150, 110, 100, 20);
+        txtPassword.setBounds(150, 110, 120, 20);
         add(txtPassword);
         txtPassword.setVisible(true);
     }
