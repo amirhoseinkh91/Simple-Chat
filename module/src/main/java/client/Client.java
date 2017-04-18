@@ -1,5 +1,7 @@
 package client;
 
+import user.User;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Formatter;
@@ -16,16 +18,30 @@ public class Client {
     private Formatter output;
     private String serverIp;
     private int serverPort = 8090;
+    private User user;
 
     // constructor
-
-
-    public Client(String serverIp, int serverPort) {
+    public Client(String serverIp, int serverPort, User user) {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
+        this.user = user;
+    }
+
+    public Client(){
+
     }
 
     // setter getters
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getNext() {
         return next;
     }
@@ -74,9 +90,9 @@ public class Client {
         this.serverPort = serverPort;
     }
 
-    public void start (){
+    public void start() {
         try {
-            socket = new Socket(serverIp,serverPort);
+            socket = new Socket(serverIp, serverPort);
             input = new Scanner(socket.getInputStream());
             output = new Formatter(socket.getOutputStream());
             String recieved;
@@ -84,14 +100,14 @@ public class Client {
                 next = input.next();
                 output.format(next + "\n");
                 // show output on my device
-                // showOutput
+                // showOutput method
                 output.flush();
                 recieved = input.next();
                 // shoe input
-                // showInput
+                // showInput method
 
             } while (!recieved.equals("exit"));
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             output.close();
