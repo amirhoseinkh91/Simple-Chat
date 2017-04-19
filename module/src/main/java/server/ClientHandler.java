@@ -4,6 +4,8 @@ package server;
 
 import client.model.Client;
 import user.User;
+
+import javax.xml.transform.sax.SAXSource;
 import java.io.BufferedReader;
 import java.io.*;
 import java.net.ServerSocket;
@@ -14,27 +16,96 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.StringTokenizer;
+
+import static server.Server.clients;
+import static server.Server.loginNames;
 
 /**
  * Created by eric on 4/18/17.
  */
-public class ClientHandler extends Thread {
+public class ClientHandler implements Runnable {
     private Client currentUser;
-    //private static HashSet<PrintWriter> writers = new HashSet<PrintWriter>();
+    private ServerThread clientsThreads[];
+    private int port=8090;
     private ServerSocket serverSocket;
-//    private BufferedReader in;
-//    private PrintWriter out;
-    List<Client> clients = new ArrayList<Client>();
-    Server server = new Server();
+    Thread thread = null;
+    DataInputStream dataInputStream;
+    DataOutputStream dataOutputStream;
+    private Socket clientSocket;
+    int clientCount=0;
+
+
 
 
     public ClientHandler(Client currentUser) {
         this.currentUser = currentUser;
     }
+    public ClientHandler(int port)
+    {
+        this.port=port;
+        this.clientsThreads=new ServerThread[100];
+        try {
+            serverSocket = new ServerSocket(port);
+            start();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+    }
+
+    private void start()
+    {
+        if(thread==null)
+        {
+            thread=new Thread();
+            thread.start();
+        }
+    }
+
+    private void stop()
+    {
+        if(thread!=null)
+        {
+            thread.stop();
+            thread=null;
+        }
+    }
+
+    private int findClient(int id)
+    {
+        for(Client client : clients)
+        {
+            if(client.getUser().getId()==id)
+            {
+                return id;
+            }
+        }
+        return -1;
+    }
+
+
+    private void addThread(Socket socket)
+    {
+        if (clientCount < clients.size()){
+            clients.get(clientCount) = new server(this, socket);
+            try{
+                clients[clientCount].open();
+                clients[clientCount].start();
+                clientCount++;
+            }
+            catch(IOException ioe){
+                ui.jTextArea1.append("\nError opening thread: " + ioe);
+            }
+        }
+        else{
+            ui.jTextArea1.append("\nClient refused: maximum " + clients.length + " reached.");
+        }
+    }
 
     private void connectUser(Client client) throws IOException {
         if(isValid(currentUser)) {
-           serverSocket.accept();
+            this.serverSocket.accept();
            clients.add(client);
         }
     }
@@ -55,7 +126,7 @@ public class ClientHandler extends Thread {
 
     private List<Client> getList()
     {
-        return this.clients;
+        return clients;
     }
 
     public void closeConnection()
@@ -102,29 +173,28 @@ public class ClientHandler extends Thread {
     }
 
     public void run() {
-        while (true) {
-            try {
-                System.out.println("Waiting for client on port " +
-                        serverSocket.getLocalPort() + "...");
-                Socket server = serverSocket.accept();
-
-                System.out.println("Just connected to " + server.getRemoteSocketAddress());
-                DataInputStream in = new DataInputStream(server.getInputStream());
-
-                System.out.println(in.readUTF());
-                DataOutputStream out = new DataOutputStream(server.getOutputStream());
-                out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress()
-                        + "\nGoodbye!");
-                server.close();
-
-            } catch (SocketTimeoutException s) {
-                System.out.println("Socket timed out!");
-                continue;
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
+        while (thread != null){
+            try{
+                addThread(serverSocket.accept());
+            }
+            catch(Exception ioe){
+                System.out.println("\nServer accept error: \n");
             }
         }
+
     }
 
+    public void sendUserList(String user) {
+        for (int i = 0; i < this.clientCount; i++) {
+            findUserThread(user).sendMsg(cl);
+        }
+    }
+    public ServerThread findUserThread(String usr){
+        for(int i = 0; i < clientCount; i++){
+            if(clients[i].username.equals(usr)){
+                return clients[i];
+            }
+        }
+        return null;
+    }
 }

@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+
 /**
  * Created by eric on 4/18/17.
  */
@@ -8,7 +10,11 @@ public class MainServer {
 
     public static void main(String[] args)
     {
-
+        try {
+            Server server=new Server();
+        } catch (IOException e) {
+            e.getMessage();
+        }
     }
 
 
