@@ -27,6 +27,12 @@ public class ServerThread extends Thread{
         this.client=client;
     }
 
+    public ServerThread(Client client1 , Client client2)
+    {
+        this.client=client1;
+        this.client=client2;
+    }
+
    public void sendMsg(Message msg) {
         try {
             streamOut.writeObject(msg);
@@ -39,6 +45,17 @@ public class ServerThread extends Thread{
     @Override
     public void run() {
         super.run();
+        ServerSocket serverSocket = null;
+        Socket socket1=null;
+        Socket socket2=null;
+        try {
+            serverSocket = new ServerSocket(8090);
+            socket1=serverSocket.accept();
+            socket2=serverSocket.accept();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public int getID() {

@@ -217,8 +217,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public void clinetConnection(Client sender , Client reciever)
+    public static void clientConnections(Client sender , Client reciever)
     {
+        ServerThread serverThread = new ServerThread(sender,reciever);
 
     }
 }

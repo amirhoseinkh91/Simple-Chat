@@ -105,7 +105,7 @@ public class ChooseUserFrame extends JFrame {
     private void connectToSelectedClient() {
         List<Client> clients = ClientHandler.getList();
         for (Client clt : clients) {
-            if(clt.getUser().getUsername().equals(this.client)){
+            if(clt.getUser().getUsername().equals(this.client.getUser().getUsername())){
                 ClientHandler.clientConnections(clt, this.client);
             }
         }
