@@ -1,7 +1,7 @@
 package server;
 
 import client.model.Client;
-import sun.plugin2.message.Message;
+import com.sun.xml.internal.ws.wsdl.writer.document.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
