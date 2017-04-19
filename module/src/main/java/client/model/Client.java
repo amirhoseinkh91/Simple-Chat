@@ -86,4 +86,32 @@ public class Client extends  Thread{
             }
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Client)) return false;
+
+        Client client = (Client) o;
+
+        if (serverPort != client.serverPort) return false;
+        if (!next.equals(client.next)) return false;
+        if (!socket.equals(client.socket)) return false;
+        if (!input.equals(client.input)) return false;
+        if (!output.equals(client.output)) return false;
+        if (!serverIp.equals(client.serverIp)) return false;
+        return user.equals(client.user);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = next.hashCode();
+        result = 31 * result + socket.hashCode();
+        result = 31 * result + input.hashCode();
+        result = 31 * result + output.hashCode();
+        result = 31 * result + serverIp.hashCode();
+        result = 31 * result + serverPort;
+        result = 31 * result + user.hashCode();
+        return result;
+    }
 }

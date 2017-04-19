@@ -27,9 +27,17 @@ public class ChooseUserFrame extends JFrame {
     private String username;
     private Client client;
 
+    public ChooseUserFrame(){
+        startFrame();
+    }
+
     public ChooseUserFrame(Client client) {
         this.client = client;
 
+       startFrame();
+    }
+
+    private void startFrame(){
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBounds(300, 100, 500, 500);
         setTitle("Choose Host");

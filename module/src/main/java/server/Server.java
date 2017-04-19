@@ -16,7 +16,7 @@ import static java.io.FileDescriptor.out;
 public class Server{
     ServerThread serverThread;
     ClientHandler clientHandler;
-    static List<Client> clients = new ArrayList<Client>();
+    public static List<Client> clients = new ArrayList<Client>();
     static List<String> loginNames = new ArrayList<String>();
 
 //    public void run() {

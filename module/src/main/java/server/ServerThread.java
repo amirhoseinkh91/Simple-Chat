@@ -21,6 +21,9 @@ public class ServerThread extends Thread{
     private ObjectInputStream streamIn = null;
     private ObjectOutputStream streamOut = null;
 
+    public ServerThread(){
+
+    }
 
     public ServerThread(Client client) {
         super();
