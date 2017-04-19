@@ -31,7 +31,7 @@ public class Server extends Thread{
         while (true){
             try{
                 Message msg = (Message) serverThread.getStreamIn().readObject();
-                clientHandler.handle(serverThread.getID(), msg);
+                //clientHandler.handle(serverThread.getID(), msg);
             }
             catch(Exception ioe){
                 System.out.println(serverThread.getID() + " ERROR reading: " + ioe.getMessage());
