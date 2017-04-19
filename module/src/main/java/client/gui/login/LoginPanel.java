@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.EmptyStackException;
 
 /**
@@ -27,6 +28,7 @@ public class LoginPanel extends JPanel {
     private JLabel lblErrorEnterFields;
     private JLabel lblErrorPortInteger;
     private JLabel lblUnknownUser;
+    private JLabel lblConnectionFailed;
     private JTextField txtServerIp;
     private JTextField txtServerPort;
     private JTextField txtUsername;
@@ -103,16 +105,29 @@ public class LoginPanel extends JPanel {
     private void openChooseFrame(Client client) throws LoginException {
         boolean isUser = true;
         ClientHandler clientHandler = new ClientHandler(client);
+        try{
+        isUser = clientHandler.isValid();
+        } catch (IOException e){
+            printConnectionFailed();
+        }
 
         if (isUser) {
-            ChooseUserFrame chooseUserFrame = new ChooseUserFrame();
+            ChooseUserFrame chooseUserFrame = new ChooseUserFrame(client);
             chooseUserFrame.setVisible(true);
         } else {
             throw new LoginException();
         }
     }
 
+    private void printConnectionFailed(){
+        lblErrorEnterFields.setVisible(false);
+        lblErrorPortInteger.setVisible(false);
+        lblUnknownUser.setVisible(false);
+        lblConnectionFailed.setVisible(true);
+    }
+
     private void printUnknownUserError() {
+        lblConnectionFailed.setVisible(false);
         lblErrorEnterFields.setVisible(false);
         lblErrorPortInteger.setVisible(false);
         lblUnknownUser.setVisible(true);
@@ -120,12 +135,14 @@ public class LoginPanel extends JPanel {
     }
 
     private void printNumberFormatException() {
+        lblConnectionFailed.setVisible(false);
         lblErrorEnterFields.setVisible(false);
         lblUnknownUser.setVisible(false);
         lblErrorPortInteger.setVisible(true);
     }
 
     private void printEnterFieldsError() {
+        lblConnectionFailed.setVisible(false);
         lblErrorPortInteger.setVisible(false);
         lblUnknownUser.setVisible(false);
         lblErrorEnterFields.setVisible(true);
@@ -224,6 +241,10 @@ public class LoginPanel extends JPanel {
         lblUnknownUser.setBounds(70, 140, 250, 20);
         add(lblUnknownUser);
         lblUnknownUser.setVisible(false);
+
+        lblConnectionFailed.setBounds(70, 140, 250, 20);
+        add(lblConnectionFailed);
+        lblConnectionFailed.setVisible(false);
     }
 
     private void addButtons() {
@@ -263,6 +284,10 @@ public class LoginPanel extends JPanel {
         lblUnknownUser = new JLabel("Incorrect Username or Password.");
         lblUnknownUser.setForeground(Color.RED);
         lblUnknownUser.setHorizontalAlignment(SwingConstants.CENTER);
+
+        lblConnectionFailed = new JLabel("Connection Failed.");
+        lblConnectionFailed.setForeground(Color.RED);
+        lblConnectionFailed.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void defineButtons() {

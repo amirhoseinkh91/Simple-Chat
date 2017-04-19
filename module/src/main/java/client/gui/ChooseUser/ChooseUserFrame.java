@@ -3,11 +3,14 @@ package client.gui.ChooseUser;
 import client.gui.chat.ChatFrame;
 import client.gui.login.LoginFrame;
 import client.model.Client;
+import server.ClientHandler;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 /**
@@ -21,8 +24,12 @@ public class ChooseUserFrame extends JFrame {
     private JButton btnConnectToHost;
     private JButton btnClose;
     private JList list;
+    private String username;
+    private Client client;
 
-    public ChooseUserFrame() {
+    public ChooseUserFrame(Client client) {
+        this.client = client;
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setBounds(300, 100, 500, 500);
         setTitle("Choose Host");
@@ -34,13 +41,21 @@ public class ChooseUserFrame extends JFrame {
         addList();
 
         addActionsToButtons();
+        addActionsToList();
+    }
+
+    private void addActionsToList() {
+        list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                username = (String) list.getSelectedValue();
+            }
+        });
     }
 
     // setter for List<Client> idleHosts
-
-
-    public void setIdleHosts(List<Client> idleHosts) {
-        this.idleHosts = idleHosts;
+    private void setIdleHosts() {
+        this.idleHosts = ClientHandler.getList();
     }
 
     private void addActionsToButtons() {
@@ -62,6 +77,7 @@ public class ChooseUserFrame extends JFrame {
     private void showIdleButtonAction() {
         btnShowIdles.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                setIdleHosts();
                 showListOfIdleHosts();
             }
         });
@@ -79,10 +95,20 @@ public class ChooseUserFrame extends JFrame {
     private void connectToHostButtonAction() {
         btnConnectToHost.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                connectToSelectedClient();
                 openChatFrame();
                 ((Window) getRootPane().getParent()).dispose();
             }
         });
+    }
+
+    private void connectToSelectedClient() {
+        List<Client> clients = ClientHandler.getList();
+        for (Client clt : clients) {
+            if(clt.getUser().getUsername().equals(this.client)){
+                ClientHandler.clientConnections(clt, this.client);
+            }
+        }
     }
 
     private void addList() {

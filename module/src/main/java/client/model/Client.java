@@ -11,7 +11,7 @@ import java.util.Scanner;
 /**
  * Created by amir on 4/18/17.
  */
-public class Client {
+public class Client extends  Thread{
 
     String next;
     private Socket socket;
@@ -50,6 +50,10 @@ public class Client {
         return serverPort;
     }
 
+    @Override
+    public  void run(){
+
+    }
 
     public void start() {
         try {
