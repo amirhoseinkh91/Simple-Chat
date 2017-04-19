@@ -41,6 +41,7 @@ public class ClientHandler implements Runnable {
 
 
     public ClientHandler(Client currentUser) {
+
         this.currentUser = currentUser;
     }
     public ClientHandler(int port)
@@ -61,6 +62,11 @@ public class ClientHandler implements Runnable {
         if(thread==null)
         {
             thread=new Thread();
+            try {
+                connectUser(currentUser);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             thread.start();
         }
     }
@@ -70,6 +76,7 @@ public class ClientHandler implements Runnable {
         if(thread!=null)
         {
             thread.stop();
+            closeConnection();
             thread=null;
         }
     }
@@ -87,23 +94,6 @@ public class ClientHandler implements Runnable {
     }
 
 
-    private void addThread(Socket socket)
-    {
-        if (clientCount < clients.size()){
-            clients.get(clientCount) = new server(this, socket);
-            try{
-                clients[clientCount].open();
-                clients[clientCount].start();
-                clientCount++;
-            }
-            catch(IOException ioe){
-                ui.jTextArea1.append("\nError opening thread: " + ioe);
-            }
-        }
-        else{
-            ui.jTextArea1.append("\nClient refused: maximum " + clients.length + " reached.");
-        }
-    }
 
     private void connectUser(Client client) throws IOException {
         if(isValid(currentUser)) {
@@ -165,7 +155,7 @@ public class ClientHandler implements Runnable {
 //        }
 //    }
 
-    private boolean isValid(Client client)
+    public boolean isValid(Client client)
     {
         for(int i=0;i<clients.size();i++)
             if (clients.contains(client)) {
@@ -186,17 +176,48 @@ public class ClientHandler implements Runnable {
 
     }
 
-    public void sendUserList(String user) {
-        for (int i = 0; i < this.clientCount; i++) {
-            findUserThread(user).sendMsg(cl);
-        }
-    }
     public ServerThread findUserThread(String usr){
         for(int i = 0; i < clientCount; i++){
-            if(clients[i].username.equals(usr)){
-                return clients[i];
+            if(clientsThreads[i].getName().equals(usr)){
+                return clientsThreads[i];
             }
         }
         return null;
+    }
+    private void addThread(Socket socket){
+        if (clientCount < clientsThreads.length){
+            clientsThreads[clientCount] = new ServerThread(this, socket);
+            try{
+                clientsThreads[clientCount].open();
+                clientsThreads[clientCount].start();
+                clientCount++;
+            }
+            catch(IOException ioe){
+                System.out.println("\nError opening thread: ");
+            }
+        }
+        else{
+            System.out.println("\nClient refused: maximum " + clientsThreads.length + " reached.");
+        }
+    }
+    public synchronized void remove(int ID){
+        int pos = findClient(ID);
+        if (pos >= 0){
+            ServerThread toTerminate = clientsThreads[pos];
+            System.out.println("\nRemoving client thread " + ID + " at " + pos);
+            if (pos < clientCount-1){
+                for (int i = pos+1; i < clientCount; i++){
+                    clientsThreads[i-1] = clientsThreads[i];
+                }
+            }
+            clientCount--;
+            try{
+                toTerminate.close();
+            }
+            catch(IOException ioe){
+                System.out.println("\nError closing thread: ");
+            }
+            toTerminate.stop();
+        }
     }
 }
