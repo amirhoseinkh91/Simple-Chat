@@ -1,17 +1,19 @@
-package client.gui;
+package client.gui.login;
 
 import javax.swing.*;
 
 /**
  * Created by amir on 4/18/17.
  */
-public class MainFrame extends JFrame {
+public class LoginFrame extends JFrame {
 
     private LoginPanel loginPanel;
-    public MainFrame() {
+
+    public LoginFrame() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 366, 234);
+        setBounds(500, 220, 366, 234);
         setResizable(false);
+        setTitle("Login");
 
         loginPanel = new LoginPanel();
         add(loginPanel);

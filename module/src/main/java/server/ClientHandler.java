@@ -1,7 +1,8 @@
 package server;
 
 
-import client.Client;
+
+import client.model.Client;
 import user.User;
 import java.io.BufferedReader;
 import java.io.*;

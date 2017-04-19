@@ -1,8 +1,9 @@
-package client;
+package client.model;
 
 import user.User;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Formatter;
 import java.util.Scanner;
@@ -25,70 +26,30 @@ public class Client {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
         this.user = user;
+//        start();
     }
 
-    public Client(){
+    public Client() {
 
     }
 
     // setter getters
-
-
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getNext() {
-        return next;
-    }
-
-    public void setNext(String next) {
-        this.next = next;
     }
 
     public Socket getSocket() {
         return socket;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
-    }
-
-    public Scanner getInput() {
-        return input;
-    }
-
-    public void setInput(Scanner input) {
-        this.input = input;
-    }
-
-    public Formatter getOutput() {
-        return output;
-    }
-
-    public void setOutput(Formatter output) {
-        this.output = output;
-    }
-
     public String getServerIp() {
         return serverIp;
-    }
-
-    public void setServerIp(String serverIp) {
-        this.serverIp = serverIp;
     }
 
     public int getServerPort() {
         return serverPort;
     }
 
-    public void setServerPort(int serverPort) {
-        this.serverPort = serverPort;
-    }
 
     public void start() {
         try {
@@ -97,8 +58,8 @@ public class Client {
             output = new Formatter(socket.getOutputStream());
             String recieved;
             do {
-                next = input.next();
-                output.format(next + "\n");
+                recieved = input.nextLine();
+                output.format(recieved + "\n");
                 // show output on my device
                 // showOutput method
                 output.flush();
@@ -107,6 +68,8 @@ public class Client {
                 // showInput method
 
             } while (!recieved.equals("exit"));
+        } catch (ConnectException e){
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
