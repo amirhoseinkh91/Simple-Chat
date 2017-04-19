@@ -1,51 +1,43 @@
 package server;
 
 import client.Client;
+import sun.plugin2.message.Message;
 import user.User;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.io.FileDescriptor.in;
+import static java.io.FileDescriptor.out;
+
 /**
  * Created by eric on 4/18/17.
  */
-public class Server {
-    private static final int PORT = 8090;
-    private Socket serverSocket;
-    List<Client> clients=new ArrayList<Client>();
-    Client client;
+public class Server extends Thread{
+    ServerThread serverThread;
+    ClientHandler clientHandler;
+    static List<Client> clients = new ArrayList<Client>();
+    static List<String> loginNames = new ArrayList<String>();
 
-
-    public Boolean isLogin(String username , String password , int serverPort , String serverIp)
-    {
-        for(Client clientUser : clients)
-        {
-         if(clientUser.getUser().getUsername().equals(username) && clientUser.getUser().getUsername().equals(password)
-                 && client.getServerPort()==serverPort && client.getServerIp().equals(serverIp))
-         {
-            return true;
-         }
-     }
-        return false;
+    @Override
+    public void run() {
+        super.run();
+        while (true){
+            try{
+                Message msg = (Message) serverThread.getStreamIn().readObject();
+                clientHandler.handle(serverThread.getID(), msg);
+            }
+            catch(Exception ioe){
+                System.out.println(serverThread.getID() + " ERROR reading: " + ioe.getMessage());
+                clientHandler.remove(serverThread.getID());
+                stop();
+            }
+        }
     }
-
-    public List<Client> getUsers()
-    {
-        return this.clients;
-    }
-
-
-    private void close()
-    {
-
-    }
-
-    private void run()
-    {
-
-    }
-
 }
