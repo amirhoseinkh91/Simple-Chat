@@ -1,5 +1,6 @@
 package server;
 
+import client.model.Client;
 import sun.plugin2.message.Message;
 
 import java.io.IOException;
@@ -11,32 +12,33 @@ import java.net.Socket;
 /**
  * Created by eric on 4/19/17.
  */
-public class ServerThread extends Thread {
+public class ServerThread extends Thread{
 
     private ClientHandler clientHandler = null;
-    private Socket socket = null;
+    private Client client;
     private int ID = -1;
-    private String username = "";
+   // private String username = "";
     private ObjectInputStream streamIn = null;
     private ObjectOutputStream streamOut = null;
 
 
-    public ServerThread(ClientHandler clientHandler, Socket socket) {
+    public ServerThread(Client client) {
         super();
-        this.clientHandler = clientHandler;
-        this.socket = socket;
-        this.ID = socket.getPort();
-        Server server = new Server();
-        server.run();
+        this.client=client;
     }
 
-    public void sendMsg(Message msg) {
+   public void sendMsg(Message msg) {
         try {
             streamOut.writeObject(msg);
             streamOut.flush();
         } catch (IOException ex) {
             System.out.println("Exception [SocketClient : send(...)]");
         }
+    }
+
+    @Override
+    public void run() {
+        super.run();
     }
 
     public int getID() {
@@ -48,15 +50,14 @@ public class ServerThread extends Thread {
     }
 
     public void open() throws IOException {
-        streamOut = new ObjectOutputStream(socket.getOutputStream());
+        streamOut = new ObjectOutputStream(client.getSocket().getOutputStream());
         streamOut.flush();
-        streamIn = new ObjectInputStream(socket.getInputStream());
+        streamIn = new ObjectInputStream(client.getSocket().getInputStream());
     }
 
     public void close() throws IOException {
-        if (socket != null) socket.close();
+        if (client.getSocket() != null) client.getSocket().close();
         if (streamIn != null) streamIn.close();
         if (streamOut != null) streamOut.close();
-
     }
 }

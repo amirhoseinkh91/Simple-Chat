@@ -30,10 +30,9 @@ public class ClientHandler implements Runnable {
     private int port=8090;
     private ServerSocket serverSocket;
     Thread thread = null;
-    DataInputStream dataInputStream;
-    DataOutputStream dataOutputStream;
-    private Socket clientSocket;
-    int clientCount=0;
+//    DataInputStream dataInputStream;
+//    DataOutputStream dataOutputStream;
+   private int clientCount=0;
 
 
 
@@ -94,14 +93,11 @@ public class ClientHandler implements Runnable {
 
 
     private void connectUser(Client client) throws IOException {
-        if(isValid(currentUser)) {
             this.serverSocket.accept();
-           clients.add(client);
-        }
+            addThread();
     }
-    private void checkOnlineUsers()
-    {
-        if(isValid(currentUser))
+    private void checkOnlineUsers() throws IOException {
+        if(isValid())
         {
             for(Client client : clients)
             {
@@ -114,7 +110,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private List<Client> getList()
+    public static List<Client> getList()
     {
         return clients;
     }
@@ -153,10 +149,10 @@ public class ClientHandler implements Runnable {
 //        }
 //    }
 
-    public boolean isValid(Client client)
-    {
+    public boolean isValid() throws IOException {
         for(int i=0;i<clients.size();i++)
-            if (clients.contains(client)) {
+            if (clients.contains(this.currentUser)) {
+            connectUser(currentUser);
                 return true;
             }
         return false;
@@ -165,7 +161,7 @@ public class ClientHandler implements Runnable {
     public void run() {
         while (thread != null){
             try{
-                addThread(serverSocket.accept());
+                addThread();
             }
             catch(Exception ioe){
                 System.out.println("\nServer accept error: \n");
@@ -182,12 +178,14 @@ public class ClientHandler implements Runnable {
         }
         return null;
     }
-    private void addThread(Socket socket){
+
+    public void addThread(){
         if (clientCount < clientsThreads.length){
-            clientsThreads[clientCount] = new ServerThread(this, socket);
+            clientsThreads[clientCount] = new ServerThread(currentUser);
             try{
                 clientsThreads[clientCount].open();
                 clientsThreads[clientCount].start();
+                serverSocket.accept();
                 clientCount++;
             }
             catch(IOException ioe){
@@ -217,5 +215,10 @@ public class ClientHandler implements Runnable {
             }
             toTerminate.stop();
         }
+    }
+
+    public void clinetConnection(Client sender , Client reciever)
+    {
+
     }
 }

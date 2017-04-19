@@ -8,14 +8,14 @@ import java.io.IOException;
 public class MainServer {
     private static final int port = 8090;
 
-    public static void main(String[] args)
-    {
-        try {
-            Server server=new Server();
-        } catch (IOException e) {
-            e.getMessage();
-        }
-    }
+//    public static void main(String[] args)
+//    {
+//        try {
+//            ServerThread server=new ServerThread();
+//        } catch (IOException e) {
+//            e.getMessage();
+//        }
+//    }
 
 
 }
