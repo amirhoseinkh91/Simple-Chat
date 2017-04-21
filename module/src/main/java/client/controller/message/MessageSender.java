@@ -27,7 +27,7 @@ public class MessageSender extends Message implements Runnable {
     }
 
     public void login() {
-        String msg = "LOGIN " + getClient().getUser().getUsername() + " " + getClient().getUser().getPassword();
+        String msg = "LOGIN " + getClient().getUser().getUsername() + " " + getClient().getUser().getPassword() + "\n";
         setOutputMessage(msg);
         getFormatter().format(msg);
         getFormatter().flush();

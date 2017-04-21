@@ -3,7 +3,7 @@ package client.gui.ChooseUser;
 import client.gui.chat.ChatFrame;
 import client.gui.login.LoginFrame;
 import client.model.Client;
-import server.ClientHandler;
+//import server.ClientHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +63,7 @@ public class ChooseUserFrame extends JFrame {
 
     // setter for List<Client> idleHosts
     private void setIdleHosts() {
-        this.idleHosts = ClientHandler.getList();
+//        this.idleHosts = ClientHandler.getList();
     }
 
     private void addActionsToButtons() {
@@ -111,12 +111,12 @@ public class ChooseUserFrame extends JFrame {
     }
 
     private void connectToSelectedClient() {
-        List<Client> clients = ClientHandler.getList();
-        for (Client clt : clients) {
-            if(clt.getUser().getUsername().equals(this.client)){
-                ClientHandler.clientConnections(clt, this.client);
-            }
-        }
+//        List<Client> clients = ClientHandler.getList();
+//        for (Client clt : clients) {
+//            if(clt.getUser().getUsername().equals(this.client)){
+//                ClientHandler.clientConnections(clt, this.client);
+//            }
+//        }
     }
 
     private void addList() {

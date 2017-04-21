@@ -5,7 +5,7 @@ import client.controller.message.MessageReciever;
 import client.controller.message.MessageSender;
 import client.gui.ChooseUser.ChooseUserFrame;
 import client.model.Client;
-import server.ClientHandler;
+//import server.ClientHandler;
 import user.User;
 
 import javax.security.auth.login.LoginException;
@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.EmptyStackException;
 
 /**
@@ -89,7 +90,7 @@ public class LoginPanel extends JPanel {
             password = readPassword();
             serverIp = readServerIp();
             readServerPort();
-            Client client = new Client(serverIp,  new User(username, password));
+            Client client = new Client(new Socket(serverIp,8090),serverIp,  new User(username, password));
             openChooseFrame(client);
             ((Window) getRootPane().getParent()).dispose();
         } catch (NumberFormatException e) {
@@ -104,23 +105,21 @@ public class LoginPanel extends JPanel {
 
     }
 
-    private void openChooseFrame(Client client) throws IOException,LoginException {
+    private void openChooseFrame(Client client) throws IOException, LoginException, InterruptedException {
 
         MessageSender messageSender = new MessageSender(client);
         messageSender.login();
-        MessageReciever.
+        System.out.println("login method called");
         boolean isValid = false;
-        ClientHandler clientHandler = new ClientHandler(client);
-        try{
-        isValid = ClientHandler.login(client.getUser().getUsername(), client.getUser().getPassword());
-        } catch (IOException e){
-            printConnectionFailed();
-        }
+        MessageReciever messageReciever = new MessageReciever(client);
+        isValid = messageReciever.isValid();
+
 
         if (isValid) {
-            ClientHandler.connect(client);
-            ChooseUserFrame chooseUserFrame = new ChooseUserFrame(client);
-            chooseUserFrame.setVisible(true);
+        ChooseUserFrame chooseUserFrame = new ChooseUserFrame(client);
+        chooseUserFrame.setVisible(true);
+        Thread.sleep(20);
+//            ClientHandler.connect(client);
         } else {
             throw new LoginException();
         }

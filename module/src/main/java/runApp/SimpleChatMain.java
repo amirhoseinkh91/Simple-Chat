@@ -32,7 +32,7 @@ public class SimpleChatMain{
             Server server = new Server(port);
             server.run();
         } catch (IOException ex) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
+            //Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
         }
     }
 

@@ -47,14 +47,14 @@ public class Server {
                     Scanner scanner = new Scanner(socket.getInputStream());
                     Formatter formatter = new Formatter(socket.getOutputStream());
                     String[] input = scanner.nextLine().split(" ");
-                    if (!"login".equals(input[0])) {
+                    if (!"LOGIN".equals(input[0])) {
                         socket.close();
                         continue;
                     }
                     if (SimpleChatMain.userList.containsKey(input[1])) {
                         if (SimpleChatMain.userList.get(input[1]).getPassword().equals(input[2])) {
                             socketList.put(input[1], socket);
-                            formatter.format("%s%s", "ok", "\n");
+                            formatter.format("%s%s", "OK", "\n");
                             formatter.flush();
                             new Thread(new ServerThread(socket, socketList)).start();
                             System.out.println("thread is created");

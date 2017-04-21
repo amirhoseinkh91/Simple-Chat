@@ -19,7 +19,8 @@ public class Client implements Serializable {
     private User user;
 
     // constructor
-    public Client(String serverIp, User user) {
+    public Client(Socket socket,String serverIp, User user) {
+        this.socket = socket;
         this.serverIp = serverIp;
         this.user = user;
     }
