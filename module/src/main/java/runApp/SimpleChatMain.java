@@ -1,30 +1,57 @@
 package runApp;
 
-import client.gui.login.LoginFrame;
-import client.model.Client;
-import server.ClientHandler;
-import server.MainServer;
+
+
 import server.Server;
-import server.ServerThread;
+
 import user.User;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by amir on 4/17/17.
  */
-public class SimpleChatMain {
-    public static void main(String[] args) {
-//        Client client1 = new Client("localhost",8090,new User("amir","amir"));
-//        Client client2 = new Client("localhost",8090,new User("erfan","erfan"));
-//        Server.clients.add(client1);
-//        Server.clients.add(client2);
-//        System.out.println("server Started");
-//        ServerThread serverThread = new ServerThread(client1);
-//        System.out.println("server Started");
+public class SimpleChatMain{
 
-        LoginFrame loginFrame = new LoginFrame();
-        loginFrame.setVisible(true);
+    public static Map<String, User> userList;
+    private static int port = 8090;
+
+    public static void main(String[] args) {
+        System.out.println("Waiting for clients...");
+        initPort(args);
+        try {
+            Server server = new Server(port);
+            server.run();
+        } catch (IOException ex) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void initPort(String[] input)
+    {
+        if (input.length == 0) {
+            port = 8090;
+        } else {
+            port = Integer.parseInt(input[0]);
+        }
+    }
+
+    static
+    {
+        userList=new HashMap<String, User>();
+        userList.put("Amir" , new User("Amir" , "Amir"));
+        userList.put("erfan" , new User("erfan" , "erfan"));
+        userList.put("mojtaba" , new User("mojtaba" , "mojtaba"));
     }
 
 }
+
