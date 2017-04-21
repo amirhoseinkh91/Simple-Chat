@@ -1,5 +1,8 @@
 package client.gui.login;
 
+import client.controller.message.Message;
+import client.controller.message.MessageReciever;
+import client.controller.message.MessageSender;
 import client.gui.ChooseUser.ChooseUserFrame;
 import client.model.Client;
 import server.ClientHandler;
@@ -79,15 +82,14 @@ public class LoginPanel extends JPanel {
         String username = null;
         String password = null;
         String serverIp = null;
-        int serverPort = 0;
         User user = null;
 
         try {
             username = readUsername();
             password = readPassword();
             serverIp = readServerIp();
-            serverPort = readServerPort();
-            Client client = new Client(serverIp, serverPort, new User(username, password));
+            readServerPort();
+            Client client = new Client(serverIp,  new User(username, password));
             openChooseFrame(client);
             ((Window) getRootPane().getParent()).dispose();
         } catch (NumberFormatException e) {
@@ -102,16 +104,21 @@ public class LoginPanel extends JPanel {
 
     }
 
-    private void openChooseFrame(Client client) throws LoginException {
-        boolean isUser = true;
+    private void openChooseFrame(Client client) throws IOException,LoginException {
+
+        MessageSender messageSender = new MessageSender(client);
+        messageSender.login();
+        MessageReciever.
+        boolean isValid = false;
         ClientHandler clientHandler = new ClientHandler(client);
         try{
-        isUser = clientHandler.isValid();
+        isValid = ClientHandler.login(client.getUser().getUsername(), client.getUser().getPassword());
         } catch (IOException e){
             printConnectionFailed();
         }
 
-        if (isUser) {
+        if (isValid) {
+            ClientHandler.connect(client);
             ChooseUserFrame chooseUserFrame = new ChooseUserFrame(client);
             chooseUserFrame.setVisible(true);
         } else {

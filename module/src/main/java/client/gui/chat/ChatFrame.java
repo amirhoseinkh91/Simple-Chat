@@ -141,10 +141,13 @@ public class ChatFrame extends JFrame implements Runnable{
 
     // implementing Runnable run method
     public void run() {
+        while (true){
+            getMessage();
+        }
 
     }
 
-    public static void getMessage(String message) {
-
+    public static void getMessage() {
+        // String message = ????
     }
 }
