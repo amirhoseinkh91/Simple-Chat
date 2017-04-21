@@ -1,83 +1,76 @@
 package server;
 
 import client.model.Client;
-import com.sun.xml.internal.ws.wsdl.writer.document.Message;
-
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Formatter;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by eric on 4/19/17.
  */
-public class ServerThread extends Thread{
+public class ServerThread implements Runnable{
 
-    private ClientHandler clientHandler = null;
+    private Scanner scanner;
+    private Formatter formatter;
+    private Socket socket;
     private Client client;
-    private int ID = -1;
-   // private String username = "";
-    private ObjectInputStream streamIn = null;
-    private ObjectOutputStream streamOut = null;
+    private Map<String , Socket> socketMap;
 
-    public ServerThread(){
 
-    }
-
-    public ServerThread(Client client) {
-        super();
-        this.client=client;
-    }
-
-    public ServerThread(Client client1 , Client client2)
+    public ServerThread(Socket socket , Map<String , Socket> socketList)
     {
-        this.client=client1;
-        this.client=client2;
-    }
-
-   public void sendMsg(Message msg) {
+        this.socket=socket;
         try {
-            streamOut.writeObject(msg);
-            streamOut.flush();
-        } catch (IOException ex) {
-            System.out.println("Exception [SocketClient : send(...)]");
+            Scanner scanner=new Scanner(socket.getInputStream());
+            Formatter formatter=new Formatter(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        this.socketMap=socketList;
+
     }
 
     @Override
     public void run() {
-        super.run();
-        ServerSocket serverSocket = null;
-        Socket socket1=null;
-        Socket socket2=null;
-        try {
-            serverSocket = new ServerSocket(8090);
-            socket1=serverSocket.accept();
-            socket2=serverSocket.accept();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        while (true) {
+            String nextline = scanner.nextLine();
+            if (nextline == null) {
+                continue;
+            }
+            if("close".equals(nextline))
+            {
+                formatter.format("%s%s" , "ok" , "\n");
+                formatter.flush();
+                scanner.close();
+                formatter.close();
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            if ("LIST".equals(nextline)) {
+                StringBuilder builder = new StringBuilder(Integer.toString(socketMap.size())).append(" ");
+                for (Map.Entry<String, Socket> socketEntry : socketMap.entrySet()) {
+                    builder.append(socketEntry.getKey()).append(" ");
+                }
+                formatter.format("%s%s", builder.toString().trim(), "\n");
+                formatter.flush();
+            }
+            if ("connect".equals(nextline)) {
+
+                System.err.println("Client Ready to chat!");
+                System.err.println(socketMap.get(nextline.split(" ")[1]));
+                new Thread(new ChatThread(socket,
+                        socketMap.get(nextline.split(" ")[1]))).start();
+                formatter.format("%s%s", "OK", "\n").flush();
+                new ChatThread(socketMap.get(nextline.split(" ")[1]), socket).run();
+                System.err.println("Chat Over!");
+            }
         }
-
-    }
-
-    public int getID() {
-        return this.ID;
-    }
-
-    public ObjectInputStream getStreamIn() {
-        return streamIn;
-    }
-
-    public void open() throws IOException {
-        streamOut = new ObjectOutputStream(client.getSocket().getOutputStream());
-        streamOut.flush();
-        streamIn = new ObjectInputStream(client.getSocket().getInputStream());
-    }
-
-    public void close() throws IOException {
-        if (client.getSocket() != null) client.getSocket().close();
-        if (streamIn != null) streamIn.close();
-        if (streamOut != null) streamOut.close();
     }
 }
