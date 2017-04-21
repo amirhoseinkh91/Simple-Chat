@@ -1,3 +1,4 @@
+/*
 package server;
 
 
@@ -10,10 +11,12 @@ import java.util.List;
 
 import static server.Server.clients;
 
+*/
 /*
 *
  * Created by eric on 4/18/17.
-*/
+*//*
+
 
 
 
@@ -224,3 +227,4 @@ public class ClientHandler implements Runnable {
         }
     }
 }
+*/
